@@ -1,0 +1,12 @@
+cli script routedlogic.iapp.0.0.1.cli {
+  # Determine if this iApp is a new configuration or an existing iApp that is now being reconfigured
+  # Returns true (1) if the iApp is being reconfigured
+  # Returns false (0) if the iApp is NOT being reconfigured, e.g. initial deployment for the first time
+  proc iapp_is_being_reconfigured { } {
+    if { [catch {set asdf [exec tmsh list sys application service "/[lindex [split [tmsh::pwd] /] 1]/${tmsh::app_name}.app/${tmsh::app_name}"]}] } {
+      return {0}
+    }
+    return {1}
+  }
+  total-signing-status not-all-signed
+}
