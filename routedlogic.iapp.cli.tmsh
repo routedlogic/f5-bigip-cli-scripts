@@ -1,4 +1,10 @@
 cli script routedlogic.iapp.0.0.1.cli {
+  # Print timestamped and iApp path/name stamped logs to /var/tmp/scriptd.out
+  proc timestamp_debug_log { message } {
+    set currentSystemTime [clock seconds]
+    puts [format "\[%s %s\]\[%s\] %s" [clock format ${currentSystemTime} -format %D] [clock format ${currentSystemTime} -format %H:%M:%S] [tmsh::pwd]/${tmsh::app_name} ${message}]
+  }
+
   # Determine if this iApp is a new configuration or an existing iApp that is now being reconfigured
   # Returns true (1) if the iApp is being reconfigured
   # Returns false (0) if the iApp is NOT being reconfigured, e.g. initial deployment for the first time

@@ -1,0 +1,74 @@
+#TMSH-VERSION: 13.1.0
+
+cli admin-partitions {
+    update-partition Common
+}
+cli script /Common/routedlogic.iapp.0.0.1.cli {
+  # Print timestamped and iApp path/name stamped logs to /var/tmp/scriptd.out
+  proc timestamp_debug_log { message } {
+    set currentSystemTime [clock seconds]
+    puts [format "\[%s %s\]\[%s\] %s" [clock format ${currentSystemTime} -format %D] [clock format ${currentSystemTime} -format %H:%M:%S] [tmsh::pwd]/${tmsh::app_name} ${message}]
+  }
+
+  # Determine if this iApp is a new configuration or an existing iApp that is now being reconfigured
+  # Returns true (1) if the iApp is being reconfigured
+  # Returns false (0) if the iApp is NOT being reconfigured, e.g. initial deployment for the first time
+  proc iapp_is_being_reconfigured { } {
+    if { [catch {set asdf [exec tmsh list sys application service "/[lindex [split [tmsh::pwd] /] 1]/${tmsh::app_name}.app/${tmsh::app_name}"]}] } {
+      return {0}
+    }
+    return {1}
+  }
+    app-service none
+    description none
+    ignore-verification false
+    script-checksum none
+    script-signature none
+    signing-key none
+}
+sys application template /Common/routedlogic.cli.script.iapp.testing {
+    actions {
+        definition {
+            html-help {
+            }
+            implementation {
+              tmsh::include "routedlogic.iapp.0.0.1.cli"
+
+timestamp_debug_log "configuration started"
+timestamp_debug_log "iApp is based on template named '${tmsh::app_template_name}'"
+
+if { [iapp_is_being_reconfigured] } {
+timestamp_debug_log "This iApp is being reconfigured"
+} else {
+timestamp_debug_log "This is a new iApp instance being configured for the first time"
+}
+
+timestamp_debug_log "configuration finished"
+            }
+            macro {
+            }
+            presentation {
+                include "/Common/f5.apl_common"
+
+section INTRODUCTION {
+  message DESCRIPTION "This iApp doesn't do anything other than test procedures from CLI script routedlogic.iapp.0.0.1.cli"
+}
+
+text {
+  INTRODUCTION "Welcome to an F5 iApp"
+  INTRODUCTION.DESCRIPTION "Description"
+}
+            }
+            role-acl none
+            run-as none
+        }
+    }
+    description none
+    ignore-verification false
+    requires-bigip-version-max none
+    requires-bigip-version-min none
+    requires-modules none
+    signing-key none
+    tmpl-checksum none
+    tmpl-signature none
+}
