@@ -1,4 +1,4 @@
-#TMSH-VERSION: 13.1.0
+#TMSH-VERSION: 13.1.0.8
 
 cli admin-partitions {
     update-partition Common
@@ -14,7 +14,7 @@ cli script /Common/routedlogic.iapp.0.0.1.cli {
   # Returns true (1) if the iApp is being reconfigured
   # Returns false (0) if the iApp is NOT being reconfigured, e.g. initial deployment for the first time
   proc iapp_is_being_reconfigured { } {
-    if { [catch {set asdf [exec tmsh list sys application service "/[lindex [split [tmsh::pwd] /] 1]/${tmsh::app_name}.app/${tmsh::app_name}"]}] } {
+    if { [catch {set asdf [exec tmsh list sys application service "[tmsh::pwd]/${tmsh::app_name}"]}] } {
       return {0}
     }
     return {1}
@@ -32,7 +32,7 @@ sys application template /Common/routedlogic.cli.script.iapp.testing {
             html-help {
             }
             implementation {
-              tmsh::include "routedlogic.iapp.0.0.1.cli"
+                tmsh::include "routedlogic.iapp.0.0.1.cli"
 
 timestamp_debug_log "configuration started"
 timestamp_debug_log "iApp is based on template named '${tmsh::app_template_name}'"
