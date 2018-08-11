@@ -1,9 +1,9 @@
 cli script routedlogic.iapp.0.0.1.cli {
-    proc applyAccessPolicy { policy_name {FIXME} } {
+    proc applyAccessPolicy { policy_name } {
       # APM policies do not commit in a reliable manner when configured via iApp.
       # This time-bomb script insures that the policy gets committed.
       # See subcase SR1-315233635 for details.
-      if { [catch {
+      if { ${policy_name} equals {} or [catch {
             set dir [tmsh::pwd]
             set fn "/var/tmp/iapp_${policy_name}.sh"
             set fh [open $fn w]
